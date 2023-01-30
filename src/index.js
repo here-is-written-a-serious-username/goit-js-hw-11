@@ -28,7 +28,7 @@ async function getPhoto(searchQuery) {
     const PARAM = '&image_type=photo&orientation=horizontal&safesearch=true'
 
     const response = await axios.get(`${BASE_URL}/?${KEY}&q=${searchQuery}${PARAM}`);
-    return await response.data.hits;
+    return response.data.hits;
 
     // console.log(response.data.hits);
     // divGallery.innerHTML = createMarkup(response.data.hits);
@@ -41,7 +41,7 @@ getPhoto().then( response => {
 });
 
 function createMarkup(response) {
-    return response.map(markupMaker);
+    return response.map(markupMaker).join('');
 
     function markupMaker({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) {
         return (
