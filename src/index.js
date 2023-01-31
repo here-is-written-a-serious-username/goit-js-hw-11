@@ -11,21 +11,31 @@ Notify.init({
 });
 const axios = require('axios').default;
 var lightbox = new SimpleLightbox('.gallery a');
+let options = {
+    root: null,
+    rootMargin: '500px',
+    threshold: 1.0
+};
+let observer = new IntersectionObserver(onLoad, options);
+
 
 const per_page = 40;
 let page = 1;
 let newSearchQuery = null;
+let searchQuery = null;
 let totalPages = 1;
 
 const divGallery = document.querySelector('.gallery');
 const form = document.querySelector('.search-form');
+const guard = document.querySelector('.js-guard');
+
 
 form.addEventListener('submit', onFormSubmit);
 
 function onFormSubmit(event) {
     event.preventDefault();
     const form = event.currentTarget;
-    const searchQuery = form.elements.searchQuery.value;
+    searchQuery = form.elements.searchQuery.value;
 
     if (newSearchQuery !== searchQuery) {
         resetPage();
@@ -39,10 +49,6 @@ function onFormSubmit(event) {
 
     getPhoto(searchQuery).then(response => {
         totalPages = Math.ceil(response.totalHits / per_page);
-        // console.log(`response.totalHits` + response.totalHits);
-        // console.log(response.totalHits);
-        // console.log(`totalPages` + totalPages);
-        // console.log(`page` + page);
 
         if (page === 1 && response.totalHits > 0) {
             Notify.success(`Hooray! We found ${response.totalHits} images.`);
@@ -54,15 +60,54 @@ function onFormSubmit(event) {
             Notify.failure('Sorry, there are no images matching your search query. Please try again.');
             resetTotalPages();
             resetPage()
+            return;
         }
-        // console.log(`page` + page);
-        // console.log(`totalPages` + totalPages);
-        
+
         divGallery.innerHTML = createMarkup(response.hits);
-        lightbox.refresh();
+        lightbox.refresh();        
+        scroll();
+        observer.observe(guard);
         
     }).catch(error => {
         console.error(error.message);
+    });
+};
+
+function onLoad(entries, observer, newSearchQuery) {
+    entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+
+            if (totalPages < page) {
+                Notify.failure('We`re sorry, but you`ve reached the end of search results.');
+                return;
+            }
+
+            getPhoto(searchQuery).then(response => {
+
+                totalPages = Math.ceil(response.totalHits / per_page);
+
+                if (page === 1 && response.totalHits > 0) {
+                    Notify.success(`Hooray! We found ${response.totalHits} images.`);
+                }
+
+                incrementPage();
+
+                if (!response.hits.length) {
+                    Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+                    resetTotalPages();
+                    resetPage()
+                }
+
+                divGallery.insertAdjacentHTML("beforeend", createMarkup(response.hits));
+                lightbox.refresh();
+                scroll();
+                observer.observe(guard);
+
+            }).catch(error => {
+                console.error(error.message);
+            });
+        }
+
     });
 };
 
@@ -114,3 +159,15 @@ function resetPage() {
 function resetTotalPages() {
     return totalPages = 1;
 };
+
+function scroll () {
+    const { height: cardHeight } = document.querySelector(".gallery").firstElementChild.getBoundingClientRect();
+
+    window.scrollBy({
+        top: cardHeight * 2,
+        behavior: "smooth",
+    });
+};
+
+
+
