@@ -39,13 +39,18 @@ function onFormSubmit(event) {
 
     if (newSearchQuery !== searchQuery) {
         resetPage();
-    }
-    newSearchQuery = searchQuery;
+    }    
 
-    if (totalPages < page) {
-        Notify.failure('We`re sorry, but you`ve reached the end of search results.');
-        return;
+    // if (totalPages < page) {
+    //     Notify.failure('We`re sorry, but you`ve reached the end of search results.');
+    //     return;
+    // }
+
+    if (newSearchQuery === searchQuery) {
+        return
     }
+
+    newSearchQuery = searchQuery;
 
     getPhoto(searchQuery).then(response => {
         totalPages = Math.ceil(response.totalHits / per_page);
@@ -64,10 +69,10 @@ function onFormSubmit(event) {
         }
 
         divGallery.innerHTML = createMarkup(response.hits);
-        lightbox.refresh();        
+        lightbox.refresh();
         scroll();
         observer.observe(guard);
-        
+
     }).catch(error => {
         console.error(error.message);
     });
@@ -84,24 +89,24 @@ function onLoad(entries, observer, newSearchQuery) {
 
             getPhoto(searchQuery).then(response => {
 
-                totalPages = Math.ceil(response.totalHits / per_page);
+                // totalPages = Math.ceil(response.totalHits / per_page);
 
-                if (page === 1 && response.totalHits > 0) {
-                    Notify.success(`Hooray! We found ${response.totalHits} images.`);
-                }
+                // if (page === 1 && response.totalHits > 0) {
+                //     Notify.success(`Hooray! We found ${response.totalHits} images.`);
+                // }
 
                 incrementPage();
 
-                if (!response.hits.length) {
-                    Notify.failure('Sorry, there are no images matching your search query. Please try again.');
-                    resetTotalPages();
-                    resetPage()
-                }
+                // if (!response.hits.length) {
+                //     Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+                //     resetTotalPages();
+                //     resetPage()
+                // }
 
                 divGallery.insertAdjacentHTML("beforeend", createMarkup(response.hits));
                 lightbox.refresh();
                 scroll();
-                observer.observe(guard);
+                // observer.observe(guard);
 
             }).catch(error => {
                 console.error(error.message);
@@ -143,7 +148,7 @@ function createMarkup(response) {
                         </p>
                     </div>
                 </a>
-            </div>`            
+            </div>`
         );
     };
 };
@@ -160,7 +165,7 @@ function resetTotalPages() {
     return totalPages = 1;
 };
 
-function scroll () {
+function scroll() {
     const { height: cardHeight } = document.querySelector(".gallery").firstElementChild.getBoundingClientRect();
 
     window.scrollBy({
