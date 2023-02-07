@@ -18,7 +18,6 @@ let options = {
 };
 let observer = new IntersectionObserver(onLoad, options);
 
-
 const per_page = 40;
 let page = 1;
 let newSearchQuery = null;
@@ -28,7 +27,6 @@ let totalPages = 1;
 const divGallery = document.querySelector('.gallery');
 const form = document.querySelector('.search-form');
 const guard = document.querySelector('.js-guard');
-
 
 form.addEventListener('submit', onFormSubmit);
 
@@ -132,7 +130,9 @@ function createMarkup(response) {
         return (
             `<div class="photo-card">
                 <a href="${largeImageURL}">
-                    <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+                    <div class="img-wrap">
+                        <img src="${webformatURL}" alt="${tags}" loading="lazy" class="photo-card__img" />
+                    </div>
                     <div class="info">
                         <p class="info-item">
                         <b>Likes ${likes}</b>
