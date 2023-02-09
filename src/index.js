@@ -37,8 +37,6 @@ function onFormSubmit(event) {
     if (newSearchQuery !== searchQuery) {
         resetPage();
     }
-
-
     if (newSearchQuery === searchQuery) {
         return
     }
@@ -51,15 +49,13 @@ function onFormSubmit(event) {
         if (page === 1 && response.totalHits > 0) {
             Notify.success(`Hooray! We found ${response.totalHits} images.`);
         }
-
-        incrementPage();
-
         if (!response.hits.length) {
             Notify.failure('Sorry, there are no images matching your search query. Please try again.');
             resetTotalPages();
             resetPage()
             return;
         }
+        incrementPage();
 
         divGallery.innerHTML = createMarkup(response.hits);
         lightbox.refresh();
