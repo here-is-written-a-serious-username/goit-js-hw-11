@@ -7,7 +7,6 @@ import "simplelightbox/dist/simple-lightbox.min.css";
 
 Notify.init({
     timeout: 3000,
-    // position: 'center-top',
 });
 const axios = require('axios').default;
 var lightbox = new SimpleLightbox('.gallery a');
@@ -37,12 +36,8 @@ function onFormSubmit(event) {
 
     if (newSearchQuery !== searchQuery) {
         resetPage();
-    }    
+    }
 
-    // if (totalPages < page) {
-    //     Notify.failure('We`re sorry, but you`ve reached the end of search results.');
-    //     return;
-    // }
 
     if (newSearchQuery === searchQuery) {
         return
@@ -68,7 +63,7 @@ function onFormSubmit(event) {
 
         divGallery.innerHTML = createMarkup(response.hits);
         lightbox.refresh();
-        scroll();
+        scroll(0.6);
         observer.observe(guard);
 
     }).catch(error => {
@@ -87,25 +82,12 @@ function onLoad(entries, observer, newSearchQuery) {
 
             getPhoto(searchQuery).then(response => {
 
-                // totalPages = Math.ceil(response.totalHits / per_page);
-
-                // if (page === 1 && response.totalHits > 0) {
-                //     Notify.success(`Hooray! We found ${response.totalHits} images.`);
-                // }
-
                 incrementPage();
-
-                // if (!response.hits.length) {
-                //     Notify.failure('Sorry, there are no images matching your search query. Please try again.');
-                //     resetTotalPages();
-                //     resetPage()
-                // }
 
                 divGallery.insertAdjacentHTML("beforeend", createMarkup(response.hits));
                 lightbox.refresh();
-                scroll();
-                // observer.observe(guard);
-
+                scroll(2);
+                
             }).catch(error => {
                 console.error(error.message);
             });
@@ -128,7 +110,7 @@ function createMarkup(response) {
 
     function markupMaker({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) {
         return (
-            `<div class="photo-card">
+            `<li class="photo-card">
                 <a href="${largeImageURL}">
                     <div class="img-wrap">
                         <img src="${webformatURL}" alt="${tags}" loading="lazy" class="photo-card__img" />
@@ -148,7 +130,7 @@ function createMarkup(response) {
                         </p>
                     </div>
                 </a>
-            </div>`
+            </li>`
         );
     };
 };
@@ -165,11 +147,11 @@ function resetTotalPages() {
     return totalPages = 1;
 };
 
-function scroll() {
+function scroll(coefficient) {
     const { height: cardHeight } = document.querySelector(".gallery").firstElementChild.getBoundingClientRect();
 
     window.scrollBy({
-        top: cardHeight * 2,
+        top: cardHeight * coefficient,
         behavior: "smooth",
     });
 };

@@ -47,11 +47,13 @@ ul {
 img {
   display: block;
   max-width: 100%;
-  height: auto;
+  /* height: auto; */
 }
 
 a {
   text-decoration: none;
+  color: inherit;
+  font-size: 18px;
 }
 
 .header,
@@ -75,11 +77,24 @@ a {
   padding-bottom: 32px;
 }
 
+.source-of-photo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h1 {
+  font-size: 30px;
+  font-weight: 600;
+  margin-right: 18px;
+  margin-bottom: 6px;
+}
 
 #search-form {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 32px;
 }
 
 
@@ -130,4 +145,9 @@ a {
   object-position: 50% 50%;
   height: 100%;
   width: 100%;
+}
+
+.info {
+  display: flex;
+  text-align: center;
 }
